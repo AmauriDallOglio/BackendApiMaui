@@ -1,0 +1,119 @@
+﻿@page "/AtivoLocal"
+@using BackendApiMaui.Data;
+@using Newtonsoft.Json;
+@using System.Net.Http;
+<h3>Tenant</h3>
+
+
+
+
+<html>
+    <PageTitle>AtivoLocal </PageTitle>
+ 
+
+    <body>
+        <form>
+            <div class="form-row">
+                @if (listaDeEmpresas == null)
+                {
+                    <p><em>Sem informação errro...</em></p>
+                }
+                else
+                {
+              
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Tenant</th>
+                                <th scope="col">Referência</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col">Inativo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var linha in listaDeEmpresas)
+                            {
+                                <tr>
+                                    <td>@linha.Id</td>
+                                    <td>@linha.Id_Tenant</td>
+                                    <td>@linha.Referencia</td>
+                                    <td>@linha.Descricao</td>
+                                    <td>@linha.Inativo</td>
+              
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </form>
+    </body>
+</html>
+
+
+@code {
+    private HttpClient Http = new HttpClient();
+    private List<EntidadeModelo.ListarTodos> listaDeEmpresas;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+       
+        string apiUrl = "https://localhost:7076/api/v1/AtivoLocal/ListarTodos";
+
+        try
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                // Fazer a chamada HTTP GET
+                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Ler o conteúdo da resposta como uma string
+                    string content = await response.Content.ReadAsStringAsync();
+                    listaDeEmpresas = JsonConvert.DeserializeObject<List<EntidadeModelo.ListarTodos>>(content);
+                }
+                else
+                {
+                    // Lidar com erros de resposta, se necessário
+                    var aaaa=  "Erro na resposta HTTP: " + response.StatusCode;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Lidar com exceções, se ocorrerem
+            var aaa = "Erro na chamada HTTP: " + ex.Message;
+        }
+
+
+        // string pesquisa = "";
+        // string apiUrl = $"https://localhost:7076/api/v1/AtivoLocal/ListarTodos";
+        // HttpResponseMessage response = await Http.GetAsync(apiUrl);
+
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     var content = await response.Content.ReadAsStringAsync();
+        //     listaDeEmpresas = JsonConvert.DeserializeObject<List<EntidadeModelo.ListarTodos>>(content);
+        // }
+        // else
+        // {
+        //     // Lidar com erros de resposta da API aqui
+        //     listaDeEmpresas = new List<EntidadeModelo.ListarTodos>();
+        // }
+    }
+
+    // protected async Task Adicionar()
+    // {
+    //     // Tenant add = new Tenant()
+    //     //     {
+    //     //         Descricao = "Inserido em: " + DateTime.Now.ToString()
+    //     //     };
+    //     // await Http.PostAsJsonAsync("/api/Empresas/Incluir", add);
+    // }
+}
+
+
+ 
